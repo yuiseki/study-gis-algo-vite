@@ -18,29 +18,6 @@ export const bufferCircleLab: Lab = {
     circleSteps: 6,
   },
   compute: (state) => {
-    /*
-    Turf.jsで触るべき関数（＝実装の核）
-    
-    1) turf.buffer（バッファ生成）
-      実験：同じ中心点・同じ半径で、結果がどう変わるか観察
-      学びの焦点：距離（km）が面（ポリゴン）になる／場所によって歪みが出る
-      関連するアルゴリズム／考え方（名前だけ）
-        Buffer (Offset curve)
-        Minkowski sum（概念としてのバッファ）
-        Geodesic vs Planar buffer（“測地線バッファ”と“平面バッファ”の対比）
-    2) turf.circle（円の近似ポリゴン生成）
-      steps（分割数）をスライダーで変えて、多角形近似の精度を体感
-      学びの焦点：円は実装上は多角形／精度とコストのトレードオフ
-      関連するアルゴリズム／考え方
-        Polygonal approximation（円の多角形近似）
-        Discretization / Sampling（離散化）
-    3) turf.area（面積）
-      buffer と circle の面積を比較
-      緯度・半径・steps でどう変動するかを観察
-      関連するアルゴリズム／考え方
-        Spherical area（球面上の面積）
-        (参考) Shoelace formula（平面多角形の面積：前後の学習に繋がります）
-    */
     const { clickedCoords, radiusKm, circleSteps } = state;
     if (clickedCoords) {
       const point = turf.point(clickedCoords);
