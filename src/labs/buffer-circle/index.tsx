@@ -121,6 +121,7 @@ export const bufferCircleLab: Lab = {
                 投影法を使用しており、 正距方位図法でのバッファを計算している（Planar buffer）。
               </p>
             </div>
+            <hr />
             <div>
               <h3>
                 円面積:
