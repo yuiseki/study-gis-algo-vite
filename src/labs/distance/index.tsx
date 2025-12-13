@@ -82,7 +82,10 @@ export const distanceLab: Lab = {
   Panel: (state, computeResult) => {
     const { clickedCoordsPrevious, clickedCoordsCurrent } = state;
 
-    const feature = computeResult ? computeResult.features[0] : null;
+    const feature =
+      computeResult && !Array.isArray(computeResult)
+        ? computeResult.features[0]
+        : null;
     const distanceByMercator = feature
       ? feature.properties?.distanceByMercator
       : null;

@@ -18,9 +18,10 @@ export type Lab = {
     };
   };
   state: any;
-  compute: (state: any) => FeatureCollection | null;
+  compute: (state: any) => FeatureCollection | FeatureCollection[] | null;
   Panel?: (
     state: any,
-    computeResult: FeatureCollection | null
+    computeResult: FeatureCollection | FeatureCollection[] | null,
+    setState?: (newState: any) => void,
   ) => JSX.Element;
 };
