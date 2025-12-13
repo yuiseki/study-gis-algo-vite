@@ -1,0 +1,24 @@
+.descriptionContainer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  max-width: 350px;
+}
+
+p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.coordsContainer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  padding: 5px;
+  border-radius: 5px;
+  max-width: 305px;
+}
