@@ -38,6 +38,14 @@ export const MapView: React.FC<{
                   "line-width": 4,
                 }}
               />
+              <Layer
+                id={`fill-layer-${index}`}
+                type="fill"
+                paint={{
+                  "fill-color": "#00FF00",
+                  "fill-opacity": 0.5,
+                }}
+              />
             </Source>
           ))}
       </Map>

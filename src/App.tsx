@@ -2,17 +2,20 @@ import { useState } from "react";
 import "./App.css";
 import { LabSelector } from "./ui/LabSelector";
 import { distanceLab } from "./labs/distance";
+import { bufferCircleLab } from "./labs/buffer-circle";
 import { MapView } from "./map/MapView";
 
 function App() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
-  const [resultGeoJSONs, setResultGeoJSONs] =
-    useState<GeoJSON.FeatureCollection[] | null>(null);
+  const [resultGeoJSONs, setResultGeoJSONs] = useState<
+    GeoJSON.FeatureCollection[] | null
+  >(null);
 
   return (
     <div>
       <h1>GIS Algorithm Study App</h1>
       <LabSelector
+        selectedLabId={selectedLab || undefined}
         onLabSelect={(labIndex) => {
           setSelectedLab(labIndex);
         }}
@@ -39,12 +42,35 @@ function App() {
 
               const computeResult = distanceLab.compute(distanceLab.state);
               setResultGeoJSONs(computeResult);
+            } else if (selectedLab === "bufferCircleLab") {
+              const coords = [e.lngLat.lng, e.lngLat.lat];
+              bufferCircleLab.state = bufferCircleLab.state || {
+                clickedCoords: null,
+              };
+              bufferCircleLab.state.clickedCoords = coords;
+
+              const computeResult = bufferCircleLab.compute(
+                bufferCircleLab.state
+              );
+              setResultGeoJSONs(computeResult);
             }
           }}
         />
         <div style={{ width: "30vw", padding: "10px" }}>
           {selectedLab === "distanceLab" && distanceLab.Panel ? (
             distanceLab.Panel(distanceLab.state, resultGeoJSONs)
+          ) : selectedLab === "bufferCircleLab" && bufferCircleLab.Panel ? (
+            bufferCircleLab.Panel(
+              bufferCircleLab.state,
+              resultGeoJSONs,
+              (newState) => {
+                bufferCircleLab.state = newState;
+                const computeResult = bufferCircleLab.compute(
+                  bufferCircleLab.state
+                );
+                setResultGeoJSONs(computeResult);
+              }
+            )
           ) : (
             <div>
               <h2>ようこそ</h2>

@@ -4,7 +4,7 @@ import type { Lab } from "../../types/lab";
 export const bufferCircleLab: Lab = {
   uniqueId: "bufferCircleLab",
   meta: {
-    title: "バッファ（円形）",
+    title: "バッファ vs 円",
     description: "点の周りに円形のバッファを作成します。",
     initialViewState: {
       longitude: 0,
@@ -15,7 +15,7 @@ export const bufferCircleLab: Lab = {
   state: {
     clickedCoords: null as [number, number] | null,
     radiusKm: 10,
-    circleSteps: 64,
+    circleSteps: 6,
   },
   compute: (state) => {
     /*
@@ -78,10 +78,10 @@ export const bufferCircleLab: Lab = {
 
     return (
       <div>
-        <h2>バッファ（円形）実験パネル</h2>
+        <h2>バッファ vs 円</h2>
         <div>
           <label>
-            バッファ半径 (km):
+            半径 (km):
             <input
               type="number"
               value={radiusKm}
