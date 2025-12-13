@@ -12,7 +12,9 @@ function App() {
   >(null);
 
   return (
-    <div>
+    <div style={{
+      padding: "10px",
+    }}>
       <h1>GIS Algorithm Study App</h1>
       <LabSelector
         selectedLabId={selectedLab || undefined}
@@ -22,7 +24,7 @@ function App() {
       />
       <div>
         <p>
-          NOTE: <b>GeoJSON は原則 WGS84 (経度緯度、 10進度) である。</b>
+          NOTE: <b>GeoJSON は原則 WGS84 (EPSG:4326、経度緯度、 10進度) である。</b>
           <b>MapLibre による表示は Web Mercator (EPSG:3857) である。</b>
         </p>
       </div>
