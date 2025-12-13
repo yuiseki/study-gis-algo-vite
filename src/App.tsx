@@ -23,28 +23,51 @@ function App() {
       : null;
 
   const clickedMercatorCoordsCurrent = clickedCoordsCurrent
-    ? new MercatorCoordinate(clickedCoordsCurrent[0], clickedCoordsCurrent[1])
+    ? MercatorCoordinate.fromLngLat({
+        lng: clickedCoordsCurrent[0],
+        lat: clickedCoordsCurrent[1],
+      })
     : null;
 
   const clickedMercatorCoordsPrevious = clickedCoordsPrevious
-    ? new MercatorCoordinate(clickedCoordsPrevious[0], clickedCoordsPrevious[1])
+    ? MercatorCoordinate.fromLngLat({
+        lng: clickedCoordsPrevious[0],
+        lat: clickedCoordsPrevious[1],
+      })
     : null;
 
+  // 二点間の中間の MercatorCoordinate を作っておく
+  const clickedMercatorCoordsMiddle =
+    clickedMercatorCoordsCurrent && clickedMercatorCoordsPrevious
+      ? new MercatorCoordinate(
+          (clickedMercatorCoordsCurrent.x + clickedMercatorCoordsPrevious.x) /
+            2,
+          (clickedMercatorCoordsCurrent.y + clickedMercatorCoordsPrevious.y) / 2
+        )
+      : null;
+
   // 地球曲率を考慮しない距離計算（km）
-  // Mercator座標は0-1に正規化されているため、地球の赤道周囲長を掛けてkm単位に変換
-  const EARTH_CIRCUMFERENCE_KM = 40075.017;
+  // MercatorCoordinate同士の差分（Δx, Δy）を取る
+  // MercatorCoordinate.meterInMercatorCoordinateUnits() を使って二点間の中間の緯度の1メートルを得る
   const distanceByMercator =
-    clickedMercatorCoordsPrevious && clickedMercatorCoordsCurrent
-      ? Math.sqrt(
-          Math.pow(
-            clickedMercatorCoordsCurrent.x - clickedMercatorCoordsPrevious.x,
-            2
-          ) +
-            Math.pow(
-              clickedMercatorCoordsCurrent.y - clickedMercatorCoordsPrevious.y,
-              2
-            )
-        ) * EARTH_CIRCUMFERENCE_KM
+    clickedMercatorCoordsCurrent &&
+    clickedMercatorCoordsPrevious &&
+    clickedMercatorCoordsMiddle
+      ? (() => {
+          const deltaX =
+            clickedMercatorCoordsCurrent.x - clickedMercatorCoordsPrevious.x;
+          const deltaY =
+            clickedMercatorCoordsCurrent.y - clickedMercatorCoordsPrevious.y;
+          const distanceInMercatorUnits = Math.sqrt(
+            deltaX * deltaX + deltaY * deltaY
+          );
+          // 中間の緯度での1メートルあたりのMercatorCoordinate単位を取得
+          const meterInMercatorUnits =
+            clickedMercatorCoordsMiddle.meterInMercatorCoordinateUnits();
+          const distanceInMeters =
+            distanceInMercatorUnits / meterInMercatorUnits;
+          return distanceInMeters / 1000; // キロメートルに変換
+        })()
       : null;
 
   return (
@@ -109,9 +132,7 @@ function App() {
               <div>Distance will be shown when two points are selected.</div>
             )}
             <p>
-              <b>
-                Mercator 座標を使った距離計算は地球曲率を考慮していない。
-              </b>
+              <b>Mercator 座標を使った距離計算は地球曲率を考慮していない。</b>
               <br />
               大まかな距離の大小のみを知りたいといった場合にしか使うべきではない。
             </p>
