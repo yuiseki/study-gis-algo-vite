@@ -7,9 +7,9 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 
 export const MapView: React.FC<{
-  resultGeoJSON: GeoJSON.FeatureCollection | null;
+  resultGeoJSONs: GeoJSON.FeatureCollection[] | null;
   onMapClick?: (e: MapLayerMouseEvent) => void;
-}> = ({ resultGeoJSON, onMapClick }) => {
+}> = ({ resultGeoJSONs, onMapClick }) => {
   return (
     <div style={{ width: "80vw", height: "80vh" }}>
       <Map
@@ -27,18 +27,19 @@ export const MapView: React.FC<{
           }
         }}
       >
-        {resultGeoJSON && (
-          <Source type="geojson" data={resultGeoJSON}>
-            <Layer
-              id="line-layer"
-              type="line"
-              paint={{
-                "line-color": "#FF0000",
-                "line-width": 4,
-              }}
-            />
-          </Source>
-        )}
+        {resultGeoJSONs &&
+          resultGeoJSONs.map((resultGeoJSON, index) => (
+            <Source key={index} type="geojson" data={resultGeoJSON}>
+              <Layer
+                id={`line-layer-${index}`}
+                type="line"
+                paint={{
+                  "line-color": "#FF0000",
+                  "line-width": 4,
+                }}
+              />
+            </Source>
+          ))}
       </Map>
     </div>
   );

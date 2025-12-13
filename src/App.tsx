@@ -6,8 +6,8 @@ import { MapView } from "./map/MapView";
 
 function App() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
-  const [resultGeoJSON, setResultGeoJSON] =
-    useState<GeoJSON.FeatureCollection | null>(null);
+  const [resultGeoJSONs, setResultGeoJSONs] =
+    useState<GeoJSON.FeatureCollection[] | null>(null);
 
   return (
     <div>
@@ -25,7 +25,7 @@ function App() {
       </div>
       <div style={{ display: "flex" }}>
         <MapView
-          resultGeoJSON={resultGeoJSON}
+          resultGeoJSONs={resultGeoJSONs}
           onMapClick={(e) => {
             if (selectedLab === "distanceLab") {
               const coords = [e.lngLat.lng, e.lngLat.lat];
@@ -38,13 +38,13 @@ function App() {
               distanceLab.state.clickedCoordsCurrent = coords;
 
               const computeResult = distanceLab.compute(distanceLab.state);
-              setResultGeoJSON(computeResult);
+              setResultGeoJSONs(computeResult);
             }
           }}
         />
         <div style={{ width: "30vw", padding: "10px" }}>
           {selectedLab === "distanceLab" && distanceLab.Panel ? (
-            distanceLab.Panel(distanceLab.state, resultGeoJSON)
+            distanceLab.Panel(distanceLab.state, resultGeoJSONs)
           ) : (
             <div>
               <h2>ようこそ</h2>

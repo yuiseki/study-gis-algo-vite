@@ -56,35 +56,34 @@ export const distanceLab: Lab = {
         { units: "kilometers" }
       );
 
-      return {
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            geometry: {
-              type: "LineString",
-              coordinates: [clickedCoordsPrevious, clickedCoordsCurrent],
+      return [
+        {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: [clickedCoordsPrevious, clickedCoordsCurrent],
+              },
+              properties: {
+                distanceByMercator: distanceByMercator,
+                distanceByTurf: distanceByTurf,
+              },
             },
-            properties: {
-              distanceByMercator: distanceByMercator,
-              distanceByTurf: distanceByTurf,
-            },
-          },
-        ],
-      };
+          ],
+        },
+      ];
     } else {
-      return {
-        type: "FeatureCollection",
-        features: [],
-      };
+      return null;
     }
   },
   Panel: (state, computeResult) => {
     const { clickedCoordsPrevious, clickedCoordsCurrent } = state;
 
     const feature =
-      computeResult && !Array.isArray(computeResult)
-        ? computeResult.features[0]
+      computeResult && computeResult.length > 0
+        ? computeResult[0].features[0]
         : null;
     const distanceByMercator = feature
       ? feature.properties?.distanceByMercator
