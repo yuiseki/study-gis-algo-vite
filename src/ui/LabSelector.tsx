@@ -10,8 +10,18 @@ export const LabSelector: React.FC<{
     >
       <ul style={{ listStyle: "none", display: "flex", gap: "10px" }}>
         {LabList.map((lab) => (
-          <li key={lab.uniqueId} style={{ fontWeight: lab.uniqueId === selectedLabId ? "bold" : "normal" }}>
-            <span onClick={() => onLabSelect && onLabSelect(lab.uniqueId)} style={{ cursor: "pointer" }}>
+          <li
+            key={lab.uniqueId}
+            style={{
+              fontWeight: lab.uniqueId === selectedLabId ? "bold" : "normal",
+              textDecoration:
+                lab.uniqueId === selectedLabId ? "underline" : "none",
+            }}
+          >
+            <span
+              onClick={() => onLabSelect && onLabSelect(lab.uniqueId)}
+              style={{ cursor: "pointer" }}
+            >
               {lab.meta.title}
             </span>
           </li>

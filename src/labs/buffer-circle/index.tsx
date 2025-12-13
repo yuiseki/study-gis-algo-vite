@@ -14,14 +14,17 @@ export const bufferCircleLab: Lab = {
   },
   state: {
     clickedCoords: null as [number, number] | null,
-    radiusKm: 10,
+    radiusKm: 1000,
     circleSteps: 6,
   },
   compute: (state) => {
     const { clickedCoords, radiusKm, circleSteps } = state;
     if (clickedCoords) {
       const point = turf.point(clickedCoords);
-      const buffer = turf.buffer(point, radiusKm, { units: "kilometers" });
+      const buffer = turf.buffer(point, radiusKm, {
+        steps: circleSteps,
+        units: "kilometers",
+      });
       const circle = turf.circle(clickedCoords, radiusKm, {
         steps: circleSteps,
         units: "kilometers",
@@ -29,7 +32,10 @@ export const bufferCircleLab: Lab = {
       const results = [];
       if (buffer) {
         const bufferArea = turf.area(buffer);
-        buffer["properties"] = { description: "Buffer (Turf.js)", area: bufferArea };
+        buffer["properties"] = {
+          description: "Buffer (Turf.js)",
+          area: bufferArea,
+        };
         results.push({
           type: "FeatureCollection" as const,
           features: [buffer],
@@ -37,7 +43,10 @@ export const bufferCircleLab: Lab = {
       }
       if (circle) {
         const circleArea = turf.area(circle);
-        circle["properties"] = { description: "Circle (Turf.js)", area: circleArea };
+        circle["properties"] = {
+          description: "Circle (Turf.js)",
+          area: circleArea,
+        };
         results.push({
           type: "FeatureCollection" as const,
           features: [circle],
@@ -50,8 +59,14 @@ export const bufferCircleLab: Lab = {
   },
   Panel: (state, computeResult, setNewState) => {
     const { clickedCoords, radiusKm, circleSteps } = state;
-    const bufferArea = computeResult && Array.isArray(computeResult) ? computeResult[0].features[0].properties?.area : null;
-    const circleArea = computeResult && Array.isArray(computeResult) ? computeResult[1].features[0].properties?.area : null;
+    const bufferArea =
+      computeResult && Array.isArray(computeResult)
+        ? computeResult[0].features[0].properties?.area
+        : null;
+    const circleArea =
+      computeResult && Array.isArray(computeResult)
+        ? computeResult[1].features[0].properties?.area
+        : null;
 
     return (
       <div>
@@ -95,8 +110,32 @@ export const bufferCircleLab: Lab = {
         {bufferArea !== null && circleArea !== null && (
           <div>
             <h3>面積比較</h3>
-            <div>バッファ面積: {bufferArea.toFixed(2)} 平方メートル</div>
-            <div>円面積: {circleArea.toFixed(2)} 平方メートル</div>
+            <div>
+              <h3>
+                バッファ面積:
+                <br />
+                {bufferArea.toFixed(2)} 平方メートル
+              </h3>
+              <p>
+                Turf.js の buffer は D3.js の geoAzimuthalEquidistant
+                投影法を使用しており、 正距方位図法でのバッファを計算している（Planar buffer）。
+              </p>
+            </div>
+            <div>
+              <h3>
+                円面積:
+                <br />
+                {circleArea.toFixed(2)} 平方メートル
+              </h3>
+              <p>
+                Turf.js の circle は指定した分割数で円周上の点列をサンプルして多角形として構成しており、
+                分割数が小さいと円を荒く近似した内接多角形になり buffer よりも面積が小さくなる。
+              </p>
+            </div>
+            <hr />
+            <div>
+              <b>※いずれも 楕円体上の厳密な測地線演算ではない</b>
+            </div>
           </div>
         )}
       </div>
