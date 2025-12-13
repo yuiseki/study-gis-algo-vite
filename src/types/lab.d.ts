@@ -22,6 +22,6 @@ export type Lab = {
   Panel?: (
     state: any,
     computeResult: FeatureCollection | FeatureCollection[] | null,
-    setState?: (newState: any) => void,
+    setNewState?: (newState: any) => void,
   ) => JSX.Element;
 };

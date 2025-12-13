@@ -93,7 +93,7 @@ export const distanceLab: Lab = {
 
     return (
       <div>
-        <h2>距離計算</h2>
+        <h2>距離（Haversine formula）</h2>
         <p>地図上で2点をクリックしてください。</p>
         <div>
           <b>前回クリック座標:</b>{" "}

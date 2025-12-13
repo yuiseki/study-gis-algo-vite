@@ -22,22 +22,22 @@ export const bufferCircleLab: Lab = {
     Turf.jsで触るべき関数（＝実装の核）
     
     1) turf.buffer（バッファ生成）
-    実験：同じ中心点・同じ半径で、結果がどう変わるか観察
-    学びの焦点：距離（km）が面（ポリゴン）になる／場所によって歪みが出る
-    関連するアルゴリズム／考え方（名前だけ）
+      実験：同じ中心点・同じ半径で、結果がどう変わるか観察
+      学びの焦点：距離（km）が面（ポリゴン）になる／場所によって歪みが出る
+      関連するアルゴリズム／考え方（名前だけ）
         Buffer (Offset curve)
         Minkowski sum（概念としてのバッファ）
         Geodesic vs Planar buffer（“測地線バッファ”と“平面バッファ”の対比）
     2) turf.circle（円の近似ポリゴン生成）
-    steps（分割数）をスライダーで変えて、多角形近似の精度を体感
-    学びの焦点：円は実装上は多角形／精度とコストのトレードオフ
-    関連するアルゴリズム／考え方
+      steps（分割数）をスライダーで変えて、多角形近似の精度を体感
+      学びの焦点：円は実装上は多角形／精度とコストのトレードオフ
+      関連するアルゴリズム／考え方
         Polygonal approximation（円の多角形近似）
         Discretization / Sampling（離散化）
     3) turf.area（面積）
-        buffer と circle の面積を比較
-        緯度・半径・steps でどう変動するかを観察
-    関連するアルゴリズム／考え方
+      buffer と circle の面積を比較
+      緯度・半径・steps でどう変動するかを観察
+      関連するアルゴリズム／考え方
         Spherical area（球面上の面積）
         (参考) Shoelace formula（平面多角形の面積：前後の学習に繋がります）
     */
@@ -51,21 +51,19 @@ export const bufferCircleLab: Lab = {
       });
       const results = [];
       if (buffer) {
+        const bufferArea = turf.area(buffer);
+        buffer["properties"] = { description: "Buffer (Turf.js)", area: bufferArea };
         results.push({
-          type: "FeatureCollection",
+          type: "FeatureCollection" as const,
           features: [buffer],
-          properties: {
-            description: "Buffer (Turf.js)",
-          },
         });
       }
       if (circle) {
+        const circleArea = turf.area(circle);
+        circle["properties"] = { description: "Circle (Turf.js)", area: circleArea };
         results.push({
-          type: "FeatureCollection",
+          type: "FeatureCollection" as const,
           features: [circle],
-          properties: {
-            description: "Circle (Turf.js)",
-          },
         });
       }
       return results;
@@ -73,15 +71,11 @@ export const bufferCircleLab: Lab = {
       return null;
     }
   },
-  Panel: (state, setState, computeResult) => {
+  Panel: (state, computeResult, setNewState) => {
     const { clickedCoords, radiusKm, circleSteps } = state;
-    let bufferArea: number | null = null;
-    let circleArea: number | null = null;
-    if (computeResult && Array.isArray(computeResult)) {
-      const [bufferFC, circleFC] = computeResult;
-      bufferArea = turf.area(bufferFC);
-      circleArea = turf.area(circleFC);
-    }
+    const bufferArea = computeResult && Array.isArray(computeResult) ? computeResult[0].features[0].properties?.area : null;
+    const circleArea = computeResult && Array.isArray(computeResult) ? computeResult[1].features[0].properties?.area : null;
+
     return (
       <div>
         <h2>バッファ（円形）実験パネル</h2>
@@ -92,7 +86,10 @@ export const bufferCircleLab: Lab = {
               type="number"
               value={radiusKm}
               onChange={(e) => {
-                setState({ ...state, radiusKm: parseFloat(e.target.value) });
+                setNewState?.({
+                  ...state,
+                  radiusKm: parseFloat(e.target.value),
+                });
               }}
             />
           </label>
@@ -104,7 +101,7 @@ export const bufferCircleLab: Lab = {
               type="number"
               value={circleSteps}
               onChange={(e) => {
-                setState({
+                setNewState?.({
                   ...state,
                   circleSteps: parseInt(e.target.value, 10),
                 });
