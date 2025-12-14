@@ -172,9 +172,9 @@ export const pointInPolygonLab: Lab = {
   },
   Panel: (state, computeResult, setNewState) => {
     const { clickedCoords, polygonType, ignoreBoundary } = state;
-    const isInside =
+    const classificationResult =
       computeResult && Array.isArray(computeResult)
-        ? computeResult[0]?.features[0].properties?.isInside
+        ? computeResult[0]?.features[0].properties?.classification
         : null;
 
     return (
@@ -215,7 +215,16 @@ export const pointInPolygonLab: Lab = {
             ? `[${clickedCoords[0].toFixed(6)}, ${clickedCoords[1].toFixed(6)}]`
             : "なし"}
         </div>
-        {isInside && <div>判定結果: {isInside ? "内側" : "外側"}</div>}
+        {classificationResult && (
+          <div>
+            判定結果:{" "}
+            {classificationResult === "inside"
+              ? "内側"
+              : classificationResult === "outside"
+              ? "外側"
+              : "境界線上"}
+          </div>
+        )}
       </div>
     );
   },
