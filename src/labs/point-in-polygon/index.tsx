@@ -88,10 +88,10 @@ export const pointInPolygonLab: Lab = {
         let classification: PointInPolygonClassification;
         if (polygonType === "simple") {
           // 単純ポリゴン (四角形)
-          // clickedCoordsFirst の西を中心に配置する
+          // clickedCoordsFirst の北を中心に配置する
           centerOfPolygon = [
-            clickedCoordsFirst[0] - 1.0,
-            clickedCoordsFirst[1],
+            clickedCoordsFirst[0],
+            clickedCoordsFirst[1] + 2.0,
           ];
           polygon = turf.polygon([
             [
@@ -121,7 +121,7 @@ export const pointInPolygonLab: Lab = {
           // 凹ポリゴン
           // clickedCoordsFirst の東を中心に配置する
           centerOfPolygon = [
-            clickedCoordsFirst[0] + 1.0,
+            clickedCoordsFirst[0] + 2.0,
             clickedCoordsFirst[1],
           ];
           polygon = turf.polygon([
@@ -154,7 +154,7 @@ export const pointInPolygonLab: Lab = {
           // clickedCoordsFirst の南を中心に配置する
           centerOfPolygon = [
             clickedCoordsFirst[0],
-            clickedCoordsFirst[1] - 1.0,
+            clickedCoordsFirst[1] - 2.0,
           ];
           polygon = turf.polygon([
             [
@@ -190,10 +190,11 @@ export const pointInPolygonLab: Lab = {
           features.push(polygon);
         } else if (polygonType === "multi") {
           // マルチポリゴン (2つの四角形)
-          // clickedCoordsFirst の北を中心に配置する
+          // 離れた島が複数あるケースで、どれか一つに入っていれば inside になることを確認したいので、くっつけない
+          // clickedCoordsFirst の西を中心に配置する
           centerOfPolygon = [
-            clickedCoordsFirst[0],
-            clickedCoordsFirst[1] + 1.0,
+            clickedCoordsFirst[0] - 2.0,
+            clickedCoordsFirst[1],
           ];
           const polygon1 = turf.polygon([
             [
@@ -307,6 +308,14 @@ export const pointInPolygonLab: Lab = {
             />
           </label>
         </div>
+        <hr />
+        <div>
+          <p>北：単純ポリゴン</p>
+          <p>東：凹ポリゴン</p>
+          <p>南：穴あきポリゴン</p>
+          <p>西：マルチポリゴン</p>
+        </div>
+        <hr />
         <div>
           初回クリック座標:{" "}
           {clickedCoordsFirst
@@ -327,11 +336,13 @@ export const pointInPolygonLab: Lab = {
         {classificationResult && (
           <div>
             判定結果:{" "}
-            {classificationResult === "inside"
-              ? "内側"
-              : classificationResult === "outside"
-              ? "外側"
-              : "境界線上"}
+            <b>
+              {classificationResult === "inside"
+                ? "内側"
+                : classificationResult === "outside"
+                ? "外側"
+                : "境界線上"}
+            </b>
           </div>
         )}
       </div>
