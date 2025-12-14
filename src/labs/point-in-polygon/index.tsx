@@ -163,7 +163,7 @@ export const pointInPolygonLab: Lab = {
       return [
         {
           type: "FeatureCollection" as const,
-          features: [point, polygon],
+          features: [polygon, point],
         },
       ];
     } else {
@@ -215,7 +215,7 @@ export const pointInPolygonLab: Lab = {
             ? `[${clickedCoords[0].toFixed(6)}, ${clickedCoords[1].toFixed(6)}]`
             : "なし"}
         </div>
-        {isInside !== null && <div>判定結果: {isInside ? "内側" : "外側"}</div>}
+        {isInside && <div>判定結果: {isInside ? "内側" : "外側"}</div>}
       </div>
     );
   },
