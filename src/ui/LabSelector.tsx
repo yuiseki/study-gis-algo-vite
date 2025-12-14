@@ -8,7 +8,9 @@ export const LabSelector: React.FC<{
     <div
       style={{ width: "100vw", height: "4vh", borderBottom: "1px solid #ccc" }}
     >
-      <ul style={{ listStyle: "none", display: "flex", gap: "10px" }}>
+      <ul
+        style={{ listStyle: "none", display: "flex", gap: "10px", padding: 0 }}
+      >
         {LabList.map((lab) => (
           <li
             key={lab.uniqueId}

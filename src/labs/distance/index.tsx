@@ -6,7 +6,7 @@ import type { Lab } from "../../types/lab";
 export const distanceLab: Lab = {
   uniqueId: "distanceLab",
   meta: {
-    title: "距離（Haversine formula）",
+    title: "距離",
     description: "2点間の距離を計算します。",
     initialViewState: {
       longitude: 0,
@@ -92,7 +92,7 @@ export const distanceLab: Lab = {
 
     return (
       <div>
-        <h2>距離（Haversine formula）</h2>
+        <h2>距離</h2>
         <p>地図上で2点をクリックしてください。</p>
         <div>
           <b>前回クリック座標:</b>{" "}
