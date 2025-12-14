@@ -61,11 +61,11 @@ export const bufferCircleLab: Lab = {
     const { clickedCoords, radiusKm, circleSteps } = state;
     const bufferArea =
       computeResult && Array.isArray(computeResult)
-        ? computeResult[0].features[0].properties?.area
+        ? computeResult[0]?.features[0].properties?.area
         : null;
     const circleArea =
       computeResult && Array.isArray(computeResult)
-        ? computeResult[1].features[0].properties?.area
+        ? computeResult[1]?.features[0].properties?.area
         : null;
 
     return (
@@ -107,7 +107,7 @@ export const bufferCircleLab: Lab = {
             ? `[${clickedCoords[0].toFixed(6)}, ${clickedCoords[1].toFixed(6)}]`
             : "なし"}
         </div>
-        {bufferArea !== null && circleArea !== null && (
+        {bufferArea && circleArea && (
           <div>
             <h3>面積比較</h3>
             <div>
@@ -118,7 +118,8 @@ export const bufferCircleLab: Lab = {
               </h3>
               <p>
                 Turf.js の buffer は D3.js の geoAzimuthalEquidistant
-                投影法を使用しており、 正距方位図法でのバッファを計算している（Planar buffer）。
+                投影法を使用しており、
+                正距方位図法でのバッファを計算している（Planar buffer）。
               </p>
             </div>
             <hr />
@@ -129,8 +130,10 @@ export const bufferCircleLab: Lab = {
                 {circleArea.toFixed(2)} 平方メートル
               </h3>
               <p>
-                Turf.js の circle は指定した分割数で円周上の点列をサンプルして多角形として構成しており、
-                分割数が小さいと円を荒く近似した内接多角形になり buffer よりも面積が小さくなる。
+                Turf.js の circle
+                は指定した分割数で円周上の点列をサンプルして多角形として構成しており、
+                分割数が小さいと円を荒く近似した内接多角形になり buffer
+                よりも面積が小さくなる。
               </p>
             </div>
             <hr />

@@ -83,7 +83,7 @@ export const distanceLab: Lab = {
 
     const feature =
       computeResult && computeResult.length > 0
-        ? computeResult[0].features[0]
+        ? computeResult[0]?.features[0]
         : null;
     const distanceByMercator = feature
       ? feature.properties?.distanceByMercator
@@ -125,7 +125,7 @@ export const distanceLab: Lab = {
         </div>
         <hr />
         <div>
-          {distanceByMercator !== null ? (
+          {distanceByMercator ? (
             <h3>
               メルカトル座標による2点間の距離:
               <br />
@@ -142,7 +142,7 @@ export const distanceLab: Lab = {
         </div>
         <hr />
         <div>
-          {distanceByTurf !== null ? (
+          {distanceByTurf ? (
             <h3>
               Turf.js による2点間の距離:
               <br />
