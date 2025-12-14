@@ -60,11 +60,15 @@ function App() {
             } else if (selectedLab === "pointInPolygonLab") {
               const coords = [e.lngLat.lng, e.lngLat.lat];
               pointInPolygonLab.state = pointInPolygonLab.state || {
-                clickedCoords: null,
-                polygonType: "simple",
+                clickedCoordsFirst: null,
+                clickedCoordsCurrent: null,
                 ignoreBoundary: true,
               };
-              pointInPolygonLab.state.clickedCoords = coords;
+              if (!pointInPolygonLab.state.clickedCoordsFirst) {
+                pointInPolygonLab.state.clickedCoordsFirst = coords;
+              } else {
+                pointInPolygonLab.state.clickedCoordsCurrent = coords;
+              }
 
               const computeResult = pointInPolygonLab.compute(
                 pointInPolygonLab.state

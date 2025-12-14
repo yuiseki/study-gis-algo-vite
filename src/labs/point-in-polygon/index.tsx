@@ -1,6 +1,12 @@
 import * as turf from "@turf/turf";
 import type { Lab } from "../../types/lab";
-import type { Feature, LineString, Point, Polygon } from "geojson";
+import type {
+  Feature,
+  LineString,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from "geojson";
 
 type PolygonType = "simple" | "concave" | "hole" | "multi";
 type PointInPolygonClassification = "inside" | "outside" | "boundary";
@@ -30,6 +36,20 @@ const isPointOnPolygonBoundaryLine = (
   return false;
 };
 
+const classifyPointInPolygon = (
+  isInside: boolean,
+  isOnLine: boolean,
+  ignoreBoundary: boolean
+): PointInPolygonClassification => {
+  if (isOnLine) {
+    return ignoreBoundary ? "outside" : "boundary";
+  } else if (isInside) {
+    return "inside";
+  } else {
+    return "outside";
+  }
+};
+
 export const pointInPolygonLab: Lab = {
   uniqueId: "pointInPolygonLab",
   meta: {
@@ -42,128 +62,222 @@ export const pointInPolygonLab: Lab = {
     },
   },
   state: {
-    clickedCoords: null as [number, number] | null,
-    polygonType: "simple" as PolygonType,
+    clickedCoordsFirst: null as [number, number] | null,
+    clickedCoordsCurrent: null as [number, number] | null,
     ignoreBoundary: false,
   },
   compute: (state) => {
-    const { clickedCoords, polygonType, ignoreBoundary } = state;
-    if (clickedCoords) {
-      // clickedCoords の周辺にポリゴンを描く
-      let polygon;
-      // booleanPointInPolygon を使う
-      let isInside;
-      let isOnLine;
-      const point = turf.point(clickedCoords);
-      if (polygonType === "simple") {
-        polygon = turf.polygon([
-          [
-            [clickedCoords[0] - 1, clickedCoords[1] - 1],
-            [clickedCoords[0] + 1, clickedCoords[1] - 1],
-            [clickedCoords[0] + 1, clickedCoords[1] + 1],
-            [clickedCoords[0] - 1, clickedCoords[1] + 1],
-            [clickedCoords[0] - 1, clickedCoords[1] - 1],
-          ],
-        ]);
-        isInside = turf.booleanPointInPolygon(point, polygon, {
-          ignoreBoundary: ignoreBoundary,
-        });
-        isOnLine = isPointOnPolygonBoundaryLine(point, polygon);
-      } else if (polygonType === "concave") {
-        polygon = turf.polygon([
-          [
-            [clickedCoords[0] - 1, clickedCoords[1] - 1],
-            [clickedCoords[0] + 0.5, clickedCoords[1]],
-            [clickedCoords[0] + 1, clickedCoords[1] - 1],
-            [clickedCoords[0] + 1, clickedCoords[1] + 1],
-            [clickedCoords[0] - 1, clickedCoords[1] + 1],
-            [clickedCoords[0] - 1, clickedCoords[1] - 1],
-          ],
-        ]);
-        isInside = turf.booleanPointInPolygon(point, polygon, {
-          ignoreBoundary: ignoreBoundary,
-        });
-        isOnLine = isPointOnPolygonBoundaryLine(point, polygon);
-      } else if (polygonType === "hole") {
-        polygon = turf.polygon([
-          [
-            [clickedCoords[0] - 1, clickedCoords[1] - 1],
-            [clickedCoords[0] + 1, clickedCoords[1] - 1],
-            [clickedCoords[0] + 1, clickedCoords[1] + 1],
-            [clickedCoords[0] - 1, clickedCoords[1] + 1],
-            [clickedCoords[0] - 1, clickedCoords[1] - 1],
-          ],
-          [
-            [clickedCoords[0] - 0.5, clickedCoords[1] - 0.5],
-            [clickedCoords[0] + 0.5, clickedCoords[1] - 0.5],
-            [clickedCoords[0] + 0.5, clickedCoords[1] + 0.5],
-            [clickedCoords[0] - 0.5, clickedCoords[1] + 0.5],
-            [clickedCoords[0] - 0.5, clickedCoords[1] - 0.5],
-          ],
-        ]);
-        isInside = turf.booleanPointInPolygon(point, polygon, {
-          ignoreBoundary: ignoreBoundary,
-        });
-        isOnLine = isPointOnPolygonBoundaryLine(point, polygon);
-      } else {
-        polygon = turf.multiPolygon([
-          [
-            [
-              [clickedCoords[0] - 2, clickedCoords[1] - 1],
-              [clickedCoords[0] - 1, clickedCoords[1] - 1],
-              [clickedCoords[0] - 1, clickedCoords[1] + 1],
-              [clickedCoords[0] - 2, clickedCoords[1] + 1],
-              [clickedCoords[0] - 2, clickedCoords[1] - 1],
-            ],
-          ],
-          [
-            [
-              [clickedCoords[0] + 1, clickedCoords[1] - 1],
-              [clickedCoords[0] + 2, clickedCoords[1] - 1],
-              [clickedCoords[0] + 2, clickedCoords[1] + 1],
-              [clickedCoords[0] + 1, clickedCoords[1] + 1],
-              [clickedCoords[0] + 1, clickedCoords[1] - 1],
-            ],
-          ],
-        ]);
+    const { clickedCoordsFirst, clickedCoordsCurrent, ignoreBoundary } = state;
+    if (clickedCoordsFirst && clickedCoordsCurrent) {
+      // clickedCoordsFirst の東西南北に各種ポリゴンを描く
+      // そして clickedCoordsCurrent が内側、外側、境界上のいずれにあるかを判定する
+      const features: Feature<Polygon | MultiPolygon>[] = [];
+      const pointCurrent = turf.point(clickedCoordsCurrent);
+      const polygonTypeList: PolygonType[] = [
+        "simple",
+        "concave",
+        "hole",
+        "multi",
+      ];
 
-        // MultiPolygon の場合は、各ポリゴンについて判定を行い、いずれかが内側であれば内側とする
-        isInside = false;
-        for (const singlePolygon of polygon.geometry.coordinates) {
-          const poly = turf.polygon(singlePolygon);
-          if (
-            turf.booleanPointInPolygon(point, poly, {
-              ignoreBoundary: ignoreBoundary,
-            })
-          ) {
-            isInside = true;
-            break;
-          }
-        }
-        isOnLine = false;
-        for (const singlePolygon of polygon.geometry.coordinates) {
-          const poly = turf.polygon(singlePolygon);
-          if (isPointOnPolygonBoundaryLine(point, poly)) {
-            isOnLine = true;
-            break;
-          }
+      for (const polygonType of polygonTypeList) {
+        let centerOfPolygon: [number, number];
+        let polygon: Feature<Polygon>;
+        let isInside: boolean = false;
+        let isOnLine: boolean = false;
+        let classification: PointInPolygonClassification;
+        if (polygonType === "simple") {
+          // 単純ポリゴン (四角形)
+          // clickedCoordsFirst の西を中心に配置する
+          centerOfPolygon = [
+            clickedCoordsFirst[0] - 1.0,
+            clickedCoordsFirst[1],
+          ];
+          polygon = turf.polygon([
+            [
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] - 0.5],
+              [centerOfPolygon[0] + 0.5, centerOfPolygon[1] - 0.5],
+              [centerOfPolygon[0] + 0.5, centerOfPolygon[1] + 0.5],
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] + 0.5],
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] - 0.5],
+            ],
+          ]);
+          isInside = turf.booleanPointInPolygon(pointCurrent, polygon);
+          isOnLine = isPointOnPolygonBoundaryLine(pointCurrent, polygon);
+          classification = classifyPointInPolygon(
+            isInside,
+            isOnLine,
+            ignoreBoundary
+          );
+
+          polygon["properties"] = {
+            type: "simple",
+            isInside: isInside,
+            isOnLine: isOnLine,
+            classification: classification,
+          };
+          features.push(polygon);
+        } else if (polygonType === "concave") {
+          // 凹ポリゴン
+          // clickedCoordsFirst の東を中心に配置する
+          centerOfPolygon = [
+            clickedCoordsFirst[0] + 1.0,
+            clickedCoordsFirst[1],
+          ];
+          polygon = turf.polygon([
+            [
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] - 0.5],
+              [centerOfPolygon[0] + 0.5, centerOfPolygon[1] - 0.5],
+              [centerOfPolygon[0], centerOfPolygon[1]], // 凹部分
+              [centerOfPolygon[0] + 0.5, centerOfPolygon[1] + 0.5],
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] + 0.5],
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] - 0.5],
+            ],
+          ]);
+          isInside = turf.booleanPointInPolygon(pointCurrent, polygon);
+          isOnLine = isPointOnPolygonBoundaryLine(pointCurrent, polygon);
+          classification = classifyPointInPolygon(
+            isInside,
+            isOnLine,
+            ignoreBoundary
+          );
+
+          polygon["properties"] = {
+            type: "concave",
+            isInside: isInside,
+            isOnLine: isOnLine,
+            classification: classification,
+          };
+          features.push(polygon);
+        } else if (polygonType === "hole") {
+          // 穴あきポリゴン
+          // clickedCoordsFirst の南を中心に配置する
+          centerOfPolygon = [
+            clickedCoordsFirst[0],
+            clickedCoordsFirst[1] - 1.0,
+          ];
+          polygon = turf.polygon([
+            [
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] - 0.5],
+              [centerOfPolygon[0] + 0.5, centerOfPolygon[1] - 0.5],
+              [centerOfPolygon[0] + 0.5, centerOfPolygon[1] + 0.5],
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] + 0.5],
+              [centerOfPolygon[0] - 0.5, centerOfPolygon[1] - 0.5],
+            ],
+            [
+              // 穴
+              [centerOfPolygon[0] - 0.2, centerOfPolygon[1] - 0.2],
+              [centerOfPolygon[0] + 0.2, centerOfPolygon[1] - 0.2],
+              [centerOfPolygon[0] + 0.2, centerOfPolygon[1] + 0.2],
+              [centerOfPolygon[0] - 0.2, centerOfPolygon[1] + 0.2],
+              [centerOfPolygon[0] - 0.2, centerOfPolygon[1] - 0.2],
+            ],
+          ]);
+          isInside = turf.booleanPointInPolygon(pointCurrent, polygon);
+          isOnLine = isPointOnPolygonBoundaryLine(pointCurrent, polygon);
+          classification = classifyPointInPolygon(
+            isInside,
+            isOnLine,
+            ignoreBoundary
+          );
+
+          polygon["properties"] = {
+            type: "hole",
+            isInside: isInside,
+            isOnLine: isOnLine,
+            classification: classification,
+          };
+          features.push(polygon);
+        } else if (polygonType === "multi") {
+          // マルチポリゴン (2つの四角形)
+          // clickedCoordsFirst の北を中心に配置する
+          centerOfPolygon = [
+            clickedCoordsFirst[0],
+            clickedCoordsFirst[1] + 1.0,
+          ];
+          const polygon1 = turf.polygon([
+            [
+              [centerOfPolygon[0] - 0.7, centerOfPolygon[1] - 0.7],
+              [centerOfPolygon[0] - 0.1, centerOfPolygon[1] - 0.7],
+              [centerOfPolygon[0] - 0.1, centerOfPolygon[1] - 0.1],
+              [centerOfPolygon[0] - 0.7, centerOfPolygon[1] - 0.1],
+              [centerOfPolygon[0] - 0.7, centerOfPolygon[1] - 0.7],
+            ],
+          ]);
+          const polygon2 = turf.polygon([
+            [
+              [centerOfPolygon[0] + 0.1, centerOfPolygon[1] + 0.1],
+              [centerOfPolygon[0] + 0.7, centerOfPolygon[1] + 0.1],
+              [centerOfPolygon[0] + 0.7, centerOfPolygon[1] + 0.7],
+              [centerOfPolygon[0] + 0.1, centerOfPolygon[1] + 0.7],
+              [centerOfPolygon[0] + 0.1, centerOfPolygon[1] + 0.1],
+            ],
+          ]);
+          const multiPolygon: Feature<MultiPolygon> = turf.multiPolygon([
+            polygon1.geometry.coordinates,
+            polygon2.geometry.coordinates,
+          ]);
+
+          multiPolygon.geometry.coordinates.some((polygonCoords) => {
+            const poly = turf.polygon(polygonCoords);
+            if (turf.booleanPointInPolygon(pointCurrent, poly)) {
+              isInside = true;
+              isOnLine = isPointOnPolygonBoundaryLine(pointCurrent, poly);
+              return true; // 見つかったのでループ終了
+            }
+            return false; // 続行
+          });
+          classification = classifyPointInPolygon(
+            isInside,
+            isOnLine,
+            ignoreBoundary
+          );
+
+          multiPolygon["properties"] = {
+            type: "multi",
+            isInside: isInside,
+            isOnLine: isOnLine,
+            classification: classification,
+          };
+          features.push(multiPolygon);
+          continue; // multiPolygon は polygons に push したので次へ
+        } else {
+          continue;
         }
       }
-
-      polygon["properties"] = {
-        isInside: isInside,
-        isOnLine: isOnLine || false,
-        classification: isOnLine
-          ? "boundary"
-          : isInside
-          ? "inside"
-          : ("outside" as PointInPolygonClassification),
-        description: "Polygon for Point-In-Polygon Test",
+      pointCurrent["properties"] = {
+        isInside: features.some((feature) => {
+          const prop = feature.properties as {
+            isInside: boolean;
+          };
+          return prop.isInside;
+        }),
+        isOnLine: features.some((feature) => {
+          const prop = feature.properties as {
+            isOnLine: boolean;
+          };
+          return prop.isOnLine;
+        }),
+        classification: classifyPointInPolygon(
+          features.some((feature) => {
+            const prop = feature.properties as {
+              isInside: boolean;
+            };
+            return prop.isInside;
+          }),
+          features.some((feature) => {
+            const prop = feature.properties as {
+              isOnLine: boolean;
+            };
+            return prop.isOnLine;
+          }),
+          ignoreBoundary
+        ),
       };
       return [
         {
           type: "FeatureCollection" as const,
-          features: [polygon, point],
+          features: [pointCurrent, ...features],
         },
       ];
     } else {
@@ -171,7 +285,7 @@ export const pointInPolygonLab: Lab = {
     }
   },
   Panel: (state, computeResult, setNewState) => {
-    const { clickedCoords, polygonType, ignoreBoundary } = state;
+    const { clickedCoordsFirst, clickedCoordsCurrent, ignoreBoundary } = state;
     const classificationResult =
       computeResult && Array.isArray(computeResult)
         ? computeResult[0]?.features[0].properties?.classification
@@ -181,22 +295,6 @@ export const pointInPolygonLab: Lab = {
       <div>
         <h2>ポリゴン内外判定</h2>
         <p>地図上で1点をクリックしてください。</p>
-        <div>
-          <label>
-            ポリゴンの種類:
-            <select
-              value={polygonType}
-              onChange={(e) =>
-                setNewState?.({ polygonType: e.target.value as PolygonType })
-              }
-            >
-              <option value="simple">単純ポリゴン</option>
-              <option value="concave">凹ポリゴン</option>
-              <option value="hole">穴あきポリゴン</option>
-              <option value="multi">マルチポリゴン</option>
-            </select>
-          </label>
-        </div>
         <div>
           <label>
             境界線上を内側とみなす:
@@ -210,11 +308,22 @@ export const pointInPolygonLab: Lab = {
           </label>
         </div>
         <div>
-          クリック座標:{" "}
-          {clickedCoords
-            ? `[${clickedCoords[0].toFixed(6)}, ${clickedCoords[1].toFixed(6)}]`
+          初回クリック座標:{" "}
+          {clickedCoordsFirst
+            ? `[${clickedCoordsFirst[0].toFixed(
+                6
+              )}, ${clickedCoordsFirst[1].toFixed(6)}]`
             : "なし"}
         </div>
+        <div>
+          今回クリック座標:{" "}
+          {clickedCoordsCurrent
+            ? `[${clickedCoordsCurrent[0].toFixed(
+                6
+              )}, ${clickedCoordsCurrent[1].toFixed(6)}]`
+            : "なし"}
+        </div>
+        <hr />
         {classificationResult && (
           <div>
             判定結果:{" "}
