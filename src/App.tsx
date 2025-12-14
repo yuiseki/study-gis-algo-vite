@@ -1,9 +1,10 @@
 import { useState } from "react";
 import "./App.css";
 import { LabSelector } from "./ui/LabSelector";
+import { MapView } from "./map/MapView";
 import { distanceLab } from "./labs/distance";
 import { bufferCircleLab } from "./labs/buffer-circle";
-import { MapView } from "./map/MapView";
+import { pointInPolygonLab } from "./labs/point-in-polygon";
 
 function App() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
@@ -56,6 +57,19 @@ function App() {
                 bufferCircleLab.state
               );
               setResultGeoJSONs(computeResult);
+            } else if (selectedLab === "pointInPolygonLab") {
+              const coords = [e.lngLat.lng, e.lngLat.lat];
+              pointInPolygonLab.state = pointInPolygonLab.state || {
+                clickedCoords: null,
+                polygonType: "simple",
+                ignoreBoundary: true,
+              };
+              pointInPolygonLab.state.clickedCoords = coords;
+
+              const computeResult = pointInPolygonLab.compute(
+                pointInPolygonLab.state
+              );
+              setResultGeoJSONs(computeResult);
             }
           }}
         />
@@ -70,6 +84,18 @@ function App() {
                 bufferCircleLab.state = newState;
                 const computeResult = bufferCircleLab.compute(
                   bufferCircleLab.state
+                );
+                setResultGeoJSONs(computeResult);
+              }
+            )
+          ) : selectedLab === "pointInPolygonLab" && pointInPolygonLab.Panel ? (
+            pointInPolygonLab.Panel(
+              pointInPolygonLab.state,
+              resultGeoJSONs,
+              (newState) => {
+                pointInPolygonLab.state = newState;
+                const computeResult = pointInPolygonLab.compute(
+                  pointInPolygonLab.state
                 );
                 setResultGeoJSONs(computeResult);
               }

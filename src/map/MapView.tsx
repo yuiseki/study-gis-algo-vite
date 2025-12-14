@@ -46,6 +46,14 @@ export const MapView: React.FC<{
                   "fill-opacity": 0.5,
                 }}
               />
+              <Layer
+                id={`circle-layer-${index}`}
+                type="circle"
+                paint={{
+                  "circle-radius": 6,
+                  "circle-color": "#0000FF",
+                }}
+              />
             </Source>
           ))}
       </Map>
