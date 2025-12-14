@@ -335,14 +335,33 @@ export const pointInPolygonLab: Lab = {
         <hr />
         {classificationResult && (
           <div>
-            判定結果:{" "}
-            <b>
-              {classificationResult === "inside"
-                ? "内側"
-                : classificationResult === "outside"
-                ? "外側"
-                : "境界線上"}
-            </b>
+            <h3>判定結果:</h3>
+            <p>
+              <b>
+                {classificationResult === "inside"
+                  ? "内側"
+                  : classificationResult === "outside"
+                  ? "外側"
+                  : "境界線上"}
+              </b>
+            </p>
+            <p>
+              turf.booleanPointInPolygon は point-in-polygon-hao package
+              を通じて Hao の point-in-polygon アルゴリズムを使用している。
+            </p>
+            <p>
+              package:{" "}
+              <a href="https://github.com/rowanwins/point-in-polygon-hao">
+                point-in-polygon-hao package on GitHub
+              </a>
+            </p>
+            <p>
+              元論文：{" "}
+              <a href="https://www.researchgate.net/publication/328261365_Optimal_Reliable_Point-in-Polygon_Test_and_Differential_Coding_Boolean_Operations_on_Polygons">
+                Optimal Reliable Point-in-Polygon Test and Differential Coding
+                Boolean Operations on Polygons
+              </a>
+            </p>
           </div>
         )}
       </div>
