@@ -71,6 +71,7 @@ export const bufferCircleLab: Lab = {
     return (
       <div>
         <h2>バッファ vs 円</h2>
+        <p>地図上で1点をクリックしてください。</p>
         <div>
           <label>
             半径 (km):
@@ -107,6 +108,7 @@ export const bufferCircleLab: Lab = {
             ? `[${clickedCoords[0].toFixed(6)}, ${clickedCoords[1].toFixed(6)}]`
             : "なし"}
         </div>
+        <hr />
         {bufferArea && circleArea && (
           <div>
             <h3>面積比較</h3>

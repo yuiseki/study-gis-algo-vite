@@ -16,18 +16,19 @@ function App() {
       padding: "10px",
     }}>
       <h1>GIS Algorithm Study App</h1>
-      <LabSelector
-        selectedLabId={selectedLab || undefined}
-        onLabSelect={(labIndex) => {
-          setSelectedLab(labIndex);
-        }}
-      />
       <div>
         <p>
           NOTE: <b>GeoJSON は原則 WGS84 (EPSG:4326、経度緯度、 10進度) である。</b>
           <b>MapLibre による表示は Web Mercator (EPSG:3857) である。</b>
         </p>
       </div>
+      <hr />
+      <LabSelector
+        selectedLabId={selectedLab || undefined}
+        onLabSelect={(labIndex) => {
+          setSelectedLab(labIndex);
+        }}
+      />
       <div style={{ display: "flex" }}>
         <MapView
           resultGeoJSONs={resultGeoJSONs}

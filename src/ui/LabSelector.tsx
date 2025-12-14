@@ -6,7 +6,7 @@ export const LabSelector: React.FC<{
 }> = ({ selectedLabId, onLabSelect }) => {
   return (
     <div
-      style={{ width: "100vw", height: "4vh", borderBottom: "1px solid #ccc" }}
+      style={{ width: "98vw", height: "4vh", borderBottom: "1px solid #ccc" }}
     >
       <ul
         style={{ listStyle: "none", display: "flex", gap: "10px", padding: 0 }}
@@ -16,8 +16,7 @@ export const LabSelector: React.FC<{
             key={lab.uniqueId}
             style={{
               fontWeight: lab.uniqueId === selectedLabId ? "bold" : "normal",
-              textDecoration:
-                lab.uniqueId === selectedLabId ? "underline" : "none",
+              textDecoration: "underline",
             }}
           >
             <span
