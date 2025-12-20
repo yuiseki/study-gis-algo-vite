@@ -85,6 +85,13 @@ export const simplifyLab: Lab = {
             : "なし"}
         </div>
         <hr />
+        <div>
+          <p>
+            turf.simplify は、 simplify-js によってジオメトリを簡略化する。
+            simplify-js は Ramer-Douglas-Peucker (RDP) アルゴリズムによる
+            ラインの簡略化を実装している。
+          </p>
+        </div>
         <hr />
       </div>
     );
