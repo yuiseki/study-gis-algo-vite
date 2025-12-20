@@ -56,6 +56,12 @@ export const distanceLab: Lab = {
         { units: "kilometers" }
       );
 
+      const distanceByTurfRhumb = turf.rhumbDistance(
+        turf.point(clickedCoordsPrevious),
+        turf.point(clickedCoordsCurrent),
+        { units: "kilometers" }
+      );
+
       return [
         {
           type: "FeatureCollection",
@@ -69,6 +75,7 @@ export const distanceLab: Lab = {
               properties: {
                 distanceByMercator: distanceByMercator,
                 distanceByTurf: distanceByTurf,
+                distanceByTurfRhumb: distanceByTurfRhumb,
               },
             },
           ],
@@ -89,6 +96,9 @@ export const distanceLab: Lab = {
       ? feature.properties?.distanceByMercator
       : null;
     const distanceByTurf = feature ? feature.properties?.distanceByTurf : null;
+    const distanceByTurfRhumb = feature
+      ? feature.properties?.distanceByTurfRhumb
+      : null;
 
     return (
       <div>
@@ -144,7 +154,7 @@ export const distanceLab: Lab = {
         <div>
           {distanceByTurf ? (
             <h3>
-              Turf.js による2点間の距離:
+              turf.distance による2点間の距離:
               <br />
               {distanceByTurf.toFixed(4)} キロメートル
             </h3>
@@ -156,6 +166,24 @@ export const distanceLab: Lab = {
             <br />
             球面近似を使って地球曲率を考慮した距離の計算をしている。 <br />
             ただし楕円体上の厳密な測地線距離ではないので注意。
+          </p>
+        </div>
+        <hr />
+        <div>
+          {distanceByTurfRhumb ? (
+            <h3>
+              turf.rhumbDistance による2点間の距離:
+              <br />
+              {distanceByTurfRhumb.toFixed(4)} キロメートル
+            </h3>
+          ) : (
+            <div>2点が選択されると距離が表示されます。</div>
+          )}
+          <p>
+            <b>turf.rhumbDistance は Rhumb line （等角航路）に基づく距離を計算している。</b>
+            <br />
+            等角航路は一定の方位角を保つ曲線であり、実際の最短距離（測地線）とは異なる。 <br />
+            航海や航空のナビゲーションにおいて有用な場合がある。
           </p>
         </div>
       </div>
