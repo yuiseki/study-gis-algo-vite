@@ -18,7 +18,7 @@ export const rewindLab: Lab = {
   },
   state: {
     clickedCoordsCurrent: null as [number, number] | null,
-    applyRewind: true,
+    applyRewind: false,
   },
   compute: (state) => {
     const { clickedCoordsCurrent, applyRewind } = state;
@@ -139,33 +139,28 @@ export const rewindLab: Lab = {
     return null;
   },
   Panel: (state, computeResult, setNewState) => {
-    const { clickedCoordsFirst, clickedCoordsCurrent, applyRewind } = state;
+    const { clickedCoordsCurrent, applyRewind } = state;
 
     return (
       <div>
-        <h2>距離</h2>
+        <h2>CW/CCWとRewind</h2>
         <p>地図上で1点をクリックしてください。</p>
         <div>
           <label>
             Rewindを適用する:
             <input
               type="checkbox"
-              checked={!applyRewind}
+              checked={applyRewind}
               onChange={(e) =>
-                setNewState?.({ applyRewind: !e.target.checked })
+                setNewState?.({
+                  applyRewind: e.target.checked,
+                  clickedCoordsCurrent,
+                })
               }
             />
           </label>
         </div>
         <hr />
-        <div>
-          初回クリック座標:{" "}
-          {clickedCoordsFirst
-            ? `[${clickedCoordsFirst[0].toFixed(
-                6
-              )}, ${clickedCoordsFirst[1].toFixed(6)}]`
-            : "なし"}
-        </div>
         <div>
           今回クリック座標:{" "}
           {clickedCoordsCurrent
@@ -176,6 +171,21 @@ export const rewindLab: Lab = {
         </div>
         <hr />
         <div>
+          <p>北西：Simple, 壊れていない（CCW）</p>
+          <p>北東：Simple, 壊れている（CW）</p>
+          <p>南西：Hole, 壊れていない（外周CCW、穴CW）</p>
+          <p>南東：Hole, 壊れている（外周CW、穴CCW）</p>
+        </div>
+        <hr />
+        <div>
+          <p>
+            壊れているポリゴンでも MapLibre GL は表示できてしまうが、
+            Point-In-Polygon などの演算で誤った結果を返す可能性がある。
+          </p>
+          <p>turf.rewind を使うと、 GeoJSON 仕様に準拠した向きに修正できる。</p>
+        </div>
+        <hr />
+        <div>
           <p>
             turf.rewind と turf.booleanClockwise は Shoelace formula
             と代数的に同値な "別形" で、回転方向を判定している。
@@ -183,7 +193,8 @@ export const rewindLab: Lab = {
           <p>
             (x2-x1)(y2+y1) の総和が正ならCW、負ならCCWという計算方法。
             <br />
-            Shoelace formula よりも実装がシンプルで速いという StackOverflow での回答をそのまま採用。
+            Shoelace formula よりも実装がシンプルで速いという StackOverflow
+            での回答をそのまま採用。
           </p>
           <p>
             <ul>
