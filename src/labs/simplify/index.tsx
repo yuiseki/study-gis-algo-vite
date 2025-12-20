@@ -29,7 +29,6 @@ export const simplifyLab: Lab = {
 
       for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * Math.PI * 4; // 2回転させてジグザグにする
-        const r = radius * (0.5 + 0.5 * Math.sin(5 * angle)); // 半径を変化させてジグザグにする
         const lon = centerLon + radius * Math.cos(angle);
         const lat = centerLat + radius * Math.sin(angle);
         points.push([lon, lat]);
