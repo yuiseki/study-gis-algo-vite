@@ -28,7 +28,7 @@ export const polygonsOpsLab: Lab = {
       const features: Feature<Polygon>[] = [];
       const size = 0.3; // ポリゴンのサイズ
       const offset = 0.4; // 中心からのオフセット
-      // clickedCoordsFirst を中心にシンプルな四角形のポリゴンを描く
+      // clickedCoordsFirst を中心に穴の空いた四角形のポリゴンを描く
       const polygon1 = turf.polygon([
         [
           [
@@ -50,6 +50,28 @@ export const polygonsOpsLab: Lab = {
           [
             clickedCoordsFirst[0] - size / 2 - offset,
             clickedCoordsFirst[1] - size / 2 + offset,
+          ],
+        ],
+        [
+          [
+            clickedCoordsFirst[0] - size / 6 - offset,
+            clickedCoordsFirst[1] - size / 6 + offset,
+          ],
+          [
+            clickedCoordsFirst[0] + size / 6 - offset,
+            clickedCoordsFirst[1] - size / 6 + offset,
+          ],
+          [
+            clickedCoordsFirst[0] + size / 6 - offset,
+            clickedCoordsFirst[1] + size / 6 + offset,
+          ],
+          [
+            clickedCoordsFirst[0] - size / 6 - offset,
+            clickedCoordsFirst[1] + size / 6 + offset,
+          ],
+          [
+            clickedCoordsFirst[0] - size / 6 - offset,
+            clickedCoordsFirst[1] - size / 6 + offset,
           ],
         ],
       ]);
