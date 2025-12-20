@@ -56,8 +56,8 @@ export const polygonsOpsLab: Lab = {
       features.push(polygon1);
 
       // clickedCoordsCurrent を中心にシンプルな円形のポリゴンを描く
-      const circle = turf.circle(clickedCoordsCurrent, size / 2, {
-        steps: 64,
+      const circle = turf.circle(clickedCoordsCurrent, size * 0.8, {
+        steps: 16,
         units: "degrees",
       });
       features.push(circle);
