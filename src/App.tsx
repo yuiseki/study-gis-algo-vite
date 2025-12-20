@@ -5,6 +5,7 @@ import { MapView } from "./map/MapView";
 import { distanceLab } from "./labs/distance";
 import { bufferCircleLab } from "./labs/buffer-circle";
 import { pointInPolygonLab } from "./labs/point-in-polygon";
+import { rewindLab } from "./labs/rewind";
 
 function App() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
@@ -74,6 +75,18 @@ function App() {
                 pointInPolygonLab.state
               );
               setResultGeoJSONs(computeResult);
+            } else if (selectedLab === "rewindLab") {
+              const coords = [e.lngLat.lng, e.lngLat.lat];
+              rewindLab.state = rewindLab.state || {
+                clickedCoordsCurrent: null,
+                applyRewind: true,
+              };
+              rewindLab.state.clickedCoordsCurrent = coords;
+
+              const computeResult = rewindLab.compute(
+                rewindLab.state
+              );
+              setResultGeoJSONs(computeResult);
             }
           }}
         />
@@ -100,6 +113,18 @@ function App() {
                 pointInPolygonLab.state = newState;
                 const computeResult = pointInPolygonLab.compute(
                   pointInPolygonLab.state
+                );
+                setResultGeoJSONs(computeResult);
+              }
+            )
+          ) : selectedLab === "rewindLab" && rewindLab.Panel ? (
+            rewindLab.Panel(
+              rewindLab.state,
+              resultGeoJSONs,
+              (newState) => {
+                rewindLab.state = newState;
+                const computeResult = rewindLab.compute(
+                  rewindLab.state
                 );
                 setResultGeoJSONs(computeResult);
               }
