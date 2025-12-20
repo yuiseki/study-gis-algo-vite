@@ -150,6 +150,7 @@ export const polygonsOpsLab: Lab = {
             Difference: 1つ目のポリゴンから2つ目のポリゴンを引いた部分を返す。
           </p>
         </div>
+        <hr />
         <div>
           <p>
             turf.union, turf.intersect, turf.difference は polyclip-ts という
