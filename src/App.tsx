@@ -3,10 +3,12 @@ import "./App.css";
 import { LabSelector } from "./ui/LabSelector";
 import { MapView } from "./map/MapView";
 import { distanceLab } from "./labs/distance";
+import { greatCircleLab } from "./labs/great-circle";
 import { bufferCircleLab } from "./labs/buffer-circle";
 import { pointInPolygonLab } from "./labs/point-in-polygon";
 import { rewindLab } from "./labs/rewind";
 import { polygonsOpsLab } from "./labs/polygons-ops";
+import { simplifyLab } from "./labs/simplify";
 
 function App() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
@@ -15,13 +17,16 @@ function App() {
   >(null);
 
   return (
-    <div style={{
-      padding: "10px",
-    }}>
+    <div
+      style={{
+        padding: "10px",
+      }}
+    >
       <h1>GIS Algorithm Study App</h1>
       <div>
         <p>
-          NOTE: <b>GeoJSON は原則 WGS84 (EPSG:4326、経度緯度、 10進度) である。</b>
+          NOTE:{" "}
+          <b>GeoJSON は原則 WGS84 (EPSG:4326、経度緯度、 10進度) である。</b>
           <b>MapLibre による表示は Web Mercator (EPSG:3857) である。</b>
         </p>
       </div>
@@ -47,6 +52,20 @@ function App() {
               distanceLab.state.clickedCoordsCurrent = coords;
 
               const computeResult = distanceLab.compute(distanceLab.state);
+              setResultGeoJSONs(computeResult);
+            } else if (selectedLab === "greatCircleLab") {
+              const coords = [e.lngLat.lng, e.lngLat.lat];
+              greatCircleLab.state = greatCircleLab.state || {
+                clickedCoordsPrevious: null,
+                clickedCoordsCurrent: null,
+              };
+              const prevCoords = greatCircleLab.state.clickedCoordsCurrent;
+              greatCircleLab.state.clickedCoordsPrevious = prevCoords;
+              greatCircleLab.state.clickedCoordsCurrent = coords;
+
+              const computeResult = greatCircleLab.compute(
+                greatCircleLab.state
+              );
               setResultGeoJSONs(computeResult);
             } else if (selectedLab === "bufferCircleLab") {
               const coords = [e.lngLat.lng, e.lngLat.lat];
@@ -80,13 +99,11 @@ function App() {
               const coords = [e.lngLat.lng, e.lngLat.lat];
               rewindLab.state = rewindLab.state || {
                 clickedCoordsCurrent: null,
-                applyRewind: true,
+                applyRewind: false,
               };
               rewindLab.state.clickedCoordsCurrent = coords;
 
-              const computeResult = rewindLab.compute(
-                rewindLab.state
-              );
+              const computeResult = rewindLab.compute(rewindLab.state);
               setResultGeoJSONs(computeResult);
             } else if (selectedLab === "polygonsOpsLab") {
               const coords = [e.lngLat.lng, e.lngLat.lat];
@@ -104,6 +121,16 @@ function App() {
               const computeResult = polygonsOpsLab.compute(
                 polygonsOpsLab.state
               );
+              setResultGeoJSONs(computeResult);
+            } else if (selectedLab === "simplifyLab") {
+              const coords = [e.lngLat.lng, e.lngLat.lat];
+              simplifyLab.state = simplifyLab.state || {
+                clickedCoordsCurrent: null,
+                showSimplifiedOnly: false,
+              };
+              simplifyLab.state.clickedCoordsCurrent = coords;
+
+              const computeResult = simplifyLab.compute(simplifyLab.state);
               setResultGeoJSONs(computeResult);
             }
           }}
@@ -123,6 +150,8 @@ function App() {
                 setResultGeoJSONs(computeResult);
               }
             )
+          ) : selectedLab === "greatCircleLab" && greatCircleLab.Panel ? (
+            greatCircleLab.Panel(greatCircleLab.state, resultGeoJSONs)
           ) : selectedLab === "pointInPolygonLab" && pointInPolygonLab.Panel ? (
             pointInPolygonLab.Panel(
               pointInPolygonLab.state,
@@ -136,17 +165,11 @@ function App() {
               }
             )
           ) : selectedLab === "rewindLab" && rewindLab.Panel ? (
-            rewindLab.Panel(
-              rewindLab.state,
-              resultGeoJSONs,
-              (newState) => {
-                rewindLab.state = newState;
-                const computeResult = rewindLab.compute(
-                  rewindLab.state
-                );
-                setResultGeoJSONs(computeResult);
-              }
-            )
+            rewindLab.Panel(rewindLab.state, resultGeoJSONs, (newState) => {
+              rewindLab.state = newState;
+              const computeResult = rewindLab.compute(rewindLab.state);
+              setResultGeoJSONs(computeResult);
+            })
           ) : selectedLab === "polygonsOpsLab" && polygonsOpsLab.Panel ? (
             polygonsOpsLab.Panel(
               polygonsOpsLab.state,
@@ -159,6 +182,12 @@ function App() {
                 setResultGeoJSONs(computeResult);
               }
             )
+          ) : selectedLab === "simplifyLab" && simplifyLab.Panel ? (
+            simplifyLab.Panel(simplifyLab.state, resultGeoJSONs, (newState) => {
+              simplifyLab.state = newState;
+              const computeResult = simplifyLab.compute(simplifyLab.state);
+              setResultGeoJSONs(computeResult);
+            })
           ) : (
             <div>
               <h2>ようこそ</h2>

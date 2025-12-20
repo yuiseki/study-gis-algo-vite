@@ -8,7 +8,7 @@ type PolygonType = "simple" | "hole";
 export const rewindLab: Lab = {
   uniqueId: "rewindLab",
   meta: {
-    title: "CW/CCWとRewind",
+    title: "Rewind",
     description: "GeoJSONの線分の向きとRewindについて学びます。",
     initialViewState: {
       longitude: 0,
