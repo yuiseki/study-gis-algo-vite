@@ -185,7 +185,7 @@ export const polygonsOpsLab: Lab = {
             </a>
           </p>
           <p>
-            Martinez-Rueda-Feito polygon clipping algorithm とも呼ばれる。
+            この論文の提案手法は、 Martinez-Rueda-Feito polygon clipping algorithm と呼ばれている。
           </p>
           <p>
             Bentley–Ottmann の plane sweep algorithm を高精度に改善した手法。
