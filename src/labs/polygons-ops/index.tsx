@@ -184,6 +184,12 @@ export const polygonsOpsLab: Lab = {
               A simple algorithm for Boolean operations on polygons
             </a>
           </p>
+          <p>
+            Martinez-Rueda-Feito polygon clipping algorithm とも呼ばれる。
+          </p>
+          <p>
+            Bentley–Ottmann の plane sweep algorithm を高精度に改善した手法。
+          </p>
         </div>
       </div>
     );
