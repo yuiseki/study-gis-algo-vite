@@ -345,25 +345,28 @@ export const pointInPolygonLab: Lab = {
                   : "境界線上"}
               </b>
             </p>
-            <p>
-              turf.booleanPointInPolygon は point-in-polygon-hao package
-              を通じて Hao の point-in-polygon アルゴリズムを使用している。
-            </p>
-            <p>
-              package:{" "}
-              <a href="https://github.com/rowanwins/point-in-polygon-hao">
-                point-in-polygon-hao package on GitHub
-              </a>
-            </p>
-            <p>
-              元論文：{" "}
-              <a href="https://www.researchgate.net/publication/328261365_Optimal_Reliable_Point-in-Polygon_Test_and_Differential_Coding_Boolean_Operations_on_Polygons">
-                Optimal Reliable Point-in-Polygon Test and Differential Coding
-                Boolean Operations on Polygons
-              </a>
-            </p>
           </div>
         )}
+        <hr />
+        <div>
+          <p>
+            turf.booleanPointInPolygon は point-in-polygon-hao package を通じて
+            Hao の point-in-polygon アルゴリズムを使用している。
+          </p>
+          <p>
+            package:{" "}
+            <a href="https://github.com/rowanwins/point-in-polygon-hao">
+              point-in-polygon-hao package on GitHub
+            </a>
+          </p>
+          <p>
+            元論文：{" "}
+            <a href="https://www.researchgate.net/publication/328261365_Optimal_Reliable_Point-in-Polygon_Test_and_Differential_Coding_Boolean_Operations_on_Polygons">
+              Optimal Reliable Point-in-Polygon Test and Differential Coding
+              Boolean Operations on Polygons
+            </a>
+          </p>
+        </div>
       </div>
     );
   },
