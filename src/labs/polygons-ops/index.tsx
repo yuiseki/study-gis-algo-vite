@@ -5,8 +5,8 @@ import type { Lab } from "../../types/lab";
 
 type PolygonOperationType = "union" | "intersect" | "difference";
 
-export const polygonOpsLab: Lab = {
-  uniqueId: "polygonOpsLab",
+export const polygonsOpsLab: Lab = {
+  uniqueId: "polygonsOpsLab",
   meta: {
     title: "ポリゴン演算",
     description: "ポリゴンの Union/Intersect/Difference について学びます。",
@@ -146,7 +146,43 @@ export const polygonOpsLab: Lab = {
         <div>
           <p>Union: 2つのポリゴンの和集合を返す。</p>
           <p>Intersect: 2つのポリゴンの共通部分を返す。</p>
-          <p>Difference: 1つ目のポリゴンから2つ目のポリゴンを引いた部分を返す。</p>
+          <p>
+            Difference: 1つ目のポリゴンから2つ目のポリゴンを引いた部分を返す。
+          </p>
+        </div>
+        <div>
+          <p>
+            turf.union, turf.intersect, turf.difference は polyclip-ts という
+            npm package を使っている。
+          </p>
+          <p>
+            <a
+              href="https://www.npmjs.com/package/polyclip-ts"
+              target="_blank"
+              rel="noreferrer"
+            >
+              polyclip-ts package on NPM
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://github.com/luizbarboza/polyclip-ts"
+              target="_blank"
+              rel="noreferrer"
+            >
+              polyclip-ts package on GitHub
+            </a>
+          </p>
+          <p>
+            元論文：{" "}
+            <a
+              href="https://www.sciencedirect.com/science/article/abs/pii/S0965997813000379"
+              target="_blank"
+              rel="noreferrer"
+            >
+              A simple algorithm for Boolean operations on polygons
+            </a>
+          </p>
         </div>
       </div>
     );

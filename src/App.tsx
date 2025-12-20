@@ -6,7 +6,7 @@ import { distanceLab } from "./labs/distance";
 import { bufferCircleLab } from "./labs/buffer-circle";
 import { pointInPolygonLab } from "./labs/point-in-polygon";
 import { rewindLab } from "./labs/rewind";
-import { polygonOpsLab } from "./labs/polygon-ops";
+import { polygonsOpsLab } from "./labs/polygons-ops";
 
 function App() {
   const [selectedLab, setSelectedLab] = useState<string | null>(null);
@@ -88,21 +88,21 @@ function App() {
                 rewindLab.state
               );
               setResultGeoJSONs(computeResult);
-            } else if (selectedLab === "polygonOpsLab") {
+            } else if (selectedLab === "polygonsOpsLab") {
               const coords = [e.lngLat.lng, e.lngLat.lat];
-              polygonOpsLab.state = polygonOpsLab.state || {
+              polygonsOpsLab.state = polygonsOpsLab.state || {
                 clickedCoordsFirst: null,
                 clickedCoordsCurrent: null,
                 polygonOperation: "union",
               };
-              if (!polygonOpsLab.state.clickedCoordsFirst) {
-                polygonOpsLab.state.clickedCoordsFirst = coords;
+              if (!polygonsOpsLab.state.clickedCoordsFirst) {
+                polygonsOpsLab.state.clickedCoordsFirst = coords;
               } else {
-                polygonOpsLab.state.clickedCoordsCurrent = coords;
+                polygonsOpsLab.state.clickedCoordsCurrent = coords;
               }
 
-              const computeResult = polygonOpsLab.compute(
-                polygonOpsLab.state
+              const computeResult = polygonsOpsLab.compute(
+                polygonsOpsLab.state
               );
               setResultGeoJSONs(computeResult);
             }
@@ -147,14 +147,14 @@ function App() {
                 setResultGeoJSONs(computeResult);
               }
             )
-          ) : selectedLab === "polygonOpsLab" && polygonOpsLab.Panel ? (
-            polygonOpsLab.Panel(
-              polygonOpsLab.state,
+          ) : selectedLab === "polygonsOpsLab" && polygonsOpsLab.Panel ? (
+            polygonsOpsLab.Panel(
+              polygonsOpsLab.state,
               resultGeoJSONs,
               (newState) => {
-                polygonOpsLab.state = newState;
-                const computeResult = polygonOpsLab.compute(
-                  polygonOpsLab.state
+                polygonsOpsLab.state = newState;
+                const computeResult = polygonsOpsLab.compute(
+                  polygonsOpsLab.state
                 );
                 setResultGeoJSONs(computeResult);
               }
