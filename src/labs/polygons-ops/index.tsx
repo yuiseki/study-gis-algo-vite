@@ -122,7 +122,7 @@ export const polygonsOpsLab: Lab = {
         <p>地図上で1点をクリックしてください。</p>
         <div>
           <select
-            value={state.operation}
+            value={polygonOperation}
             onChange={(e) =>
               setNewState?.({
                 ...state,
