@@ -141,6 +141,8 @@ export const rewindLab: Lab = {
   Panel: (state, computeResult, setNewState) => {
     const { clickedCoordsCurrent, applyRewind } = state;
 
+    console.log("computeResult:", computeResult);
+
     return (
       <div>
         <h2>CW/CCWとRewind</h2>

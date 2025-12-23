@@ -47,7 +47,10 @@ export const simplifyLab: Lab = {
       if (showSimplifiedOnly) {
         return [turf.featureCollection([simplifiedLine])];
       } else {
-        return [polygons, turf.featureCollection([simplifiedLine])];
+        return [
+          turf.featureCollection([polygons]),
+          turf.featureCollection([simplifiedLine]),
+        ];
       }
     } else {
       return null;
@@ -55,6 +58,8 @@ export const simplifyLab: Lab = {
   },
   Panel: (state, computeResult, setNewState) => {
     const { clickedCoordsCurrent, showSimplifiedOnly } = state;
+
+    console.log("computeResult:", computeResult);
 
     return (
       <div>

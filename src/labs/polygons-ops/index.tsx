@@ -115,6 +115,8 @@ export const polygonsOpsLab: Lab = {
   Panel: (state, computeResult, setNewState) => {
     const { clickedCoordsFirst, clickedCoordsCurrent, polygonOperation } =
       state;
+    
+    console.log("computeResult:", computeResult);
 
     return (
       <div>
